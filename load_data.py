@@ -11,3 +11,5 @@ def read_txt(name):
         contents.append(lines)
     f.close()
     return contents
+
+
