@@ -1,0 +1,5 @@
+# mecab
+https://joyhong.tistory.com/129
+
+# soynlp
+https://github.com/lovit/soynlp
