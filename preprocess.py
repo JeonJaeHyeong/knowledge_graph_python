@@ -35,7 +35,7 @@ def lst2str(lst):
 def mecab_tokenize(sent):
     mecab = Mecab()
     words = mecab.pos(sent)
-    words = [w[0] for w in words if ('NNP' in w[1] or 'XR' in w[1] or 'VA' in w[1] or 'NNG' in w[1])]
+    words = [w[0] for w in words if ('NNG' in w[1])]
     # XR : 어근, NNP : 고유명사, NNG : 보통명사, VA : 형용사
     return words
 
@@ -55,7 +55,7 @@ def preprocess_node(paragraphs):  # paragraphs : ["문단1", "문단2", ...]
     clean_comb = clean_text(combine_para)
     tokens_comb = mecab_tokenize(clean_comb)
 
-    return tokens_comb #dic_comb, dic_paras, dic_stcs
+    return tokens_comb
 
 def preprocess_edge(paragraphs):  # paragraphs : ["문단1", "문단2", ...]
     
