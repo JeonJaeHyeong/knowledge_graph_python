@@ -35,7 +35,7 @@ def lst2str(lst):
 def mecab_tokenize(sent):
     mecab = Mecab()
     words = mecab.pos(sent)
-    words = [w[0] for w in words if ('NNG' in w[1])]
+    words = [w[0] for w in words if ('NNG' in w[1] or 'NNP' in w[1])]
     # XR : 어근, NNP : 고유명사, NNG : 보통명사, VA : 형용사
     return words
 
