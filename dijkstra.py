@@ -39,8 +39,10 @@ def dijkstra(graph, r):
                 neidx = node2idx[nei]
                 if neidx == nidx:
                     continue
-
-                distance = np.power(np.power(curr_distance, r) + np.power(graph[curr][nei]['weight'], r), 1/r)
+                if r == float("inf"):
+                    distance = max(curr_distance, graph[curr][nei]['weight'])
+                else:
+                    distance = np.power(np.power(curr_distance, r) + np.power(graph[curr][nei]['weight'], r), 1/r)
 
                 if distance < distances[nidx][neidx]:
                     distances[nidx][neidx] = distance
