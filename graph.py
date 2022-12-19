@@ -2,9 +2,8 @@ import numpy as np
 import pandas as pd
 import load_data as ld
 import preprocess as pre
-from numpy.linalg import norm
+import util
 import networkx as nx
-import operator
 import dijkstra as d
 import kruskal as k
 import PFNET
@@ -23,59 +22,12 @@ class KnowledgeGraph:
         self.edges = self.get_adj()
         self.G = self.make_graph(self.nodes, self.edges)
         self.cut_G = self.cutting_edge(self.G, self.edges, r, cut_option)
-    
-    def cos_similarity(self, lst1, lst2):
-        return np.dot(lst1, lst2)/(np.linalg.norm(lst1)*np.linalg.norm(lst2))
-
-    def rescale(self, num):
-        return self.scale - (self.scale-1)*num
-
-    def get_top_N(self, dict):
-        tmp_dict = {}
-        sorted_dict = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:self.n_node]
-        #print("dict : ", dict)
-        '''
-        tmp_dict['카테친'] = dict['카테친'] 
-        tmp_dict['추출물'] = dict['추출물'] 
-        tmp_dict['유도체'] = dict['유도체'] 
-        tmp_dict['찻잎'] = dict['찻잎'] 
-        tmp_dict['억제'] = dict['억제'] 
-        tmp_dict['암세포'] = dict['암세포'] 
-        tmp_dict['유로키나제'] = dict['유로키나제'] 
-        tmp_dict['녹차'] = dict['녹차'] 
-        tmp_dict['효능'] = dict['효능'] 
-        tmp_dict['차'] = dict['차'] 
-        tmp_dict['화학물질'] = dict['화학물질'] 
-        tmp_dict['폴리페놀'] = dict['폴리페놀'] 
-        tmp_dict['플라반올'] = dict['플라반올'] 
-        tmp_dict['테아플라빈'] = dict['테아플라빈'] 
-        
-        tmp_dict['카테킨'] = dict['카테킨'] 
-        tmp_dict['자일리톨'] = dict['자일리톨'] 
-        tmp_dict['비타민'] = dict['비타민'] 
-        tmp_dict['증상'] = dict['증상'] 
-        tmp_dict['감염'] = dict['감염'] 
-        tmp_dict['독감'] = dict['독감'] 
-        tmp_dict['바이러스'] = dict['바이러스'] 
-        tmp_dict['녹차'] = dict['녹차'] 
-        tmp_dict['섭취'] = dict['섭취'] 
-        tmp_dict['차'] = dict['차'] 
-        tmp_dict['알파파'] = dict['알파파'] 
-        tmp_dict['데아닌'] = dict['데아닌'] 
-        tmp_dict['이뇨작용'] = dict['이뇨작용'] 
-        tmp_dict['감기'] = dict['감기'] 
-        
-        tmp_dict = sorted(tmp_dict.items(), key=operator.itemgetter(1), reverse=True)
-        #print("tmp : ", tmp_dict)
-        '''
-        return sorted_dict
-        
-        
+            
     def get_nodes(self):
         if self.w_option == "Term-Frequency":
             tokens_comb = pre.preprocess_node(self.paras)
             dic_comb = pre.make_dic_count(tokens_comb)
-            return self.get_top_N(dic_comb) 
+            return util.get_top_N(dic_comb, self.n_node) 
         elif self.w_option =="TextRank":
             keyword_extractor = KeywordSummarizer(
                 tokenize = pre.mecab_tokenize,
@@ -89,7 +41,7 @@ class KnowledgeGraph:
                 dic_comb.append((word, round(rank, 2)))
             return dic_comb
                 
-    def get_adj(self): #title, nodes, option, scale):
+    def get_adj(self):
         
         tokens_paras, tokens_stcs = pre.preprocess_edge(self.paras) 
         dic_paras = list(map(pre.make_dic_count, tokens_paras))
@@ -129,15 +81,15 @@ class KnowledgeGraph:
                 elif self.e_option == "scs":
                     Lvector = get_vector(dic_stcs, left)
                     Rvector = get_vector(dic_stcs, right)
-                    sim = self.cos_similarity(Lvector, Rvector)
+                    sim = util.cos_similarity(Lvector, Rvector)
                     if sim != 0:
-                        cotable[i][j] = self.rescale(sim)
+                        cotable[i][j] = util.rescale(sim, self.scale)
                 elif self.e_option == "pcs":
                     Lvector = get_vector(dic_paras, left)
                     Rvector = get_vector(dic_paras, right)
-                    sim = self.cos_similarity(Lvector, Rvector)
+                    sim = util.cos_similarity(Lvector, Rvector)
                     if sim != 0:
-                        cotable[i][j] = self.rescale(sim)
+                        cotable[i][j] = util.rescale(sim, self.scale)
                 else:
                     print("error : choose option among ('ss', 'ps', 'scs', 'pcs')")
         #print("before cotable : ", cotable)
@@ -146,7 +98,7 @@ class KnowledgeGraph:
         
         if self.e_option == "ss" or self.e_option == "ps":
             maxvalue = np.max(cotable)
-            cotable = self.rescale(cotable / maxvalue)
+            cotable = util.rescale(cotable / maxvalue, self.scale)
             for i in range(len(no_edge_idx[0])):
                 cotable[no_edge_idx[0][i], no_edge_idx[1][i]] = -1
             

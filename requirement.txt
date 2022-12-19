@@ -1,5 +1,20 @@
 # mecab
 https://joyhong.tistory.com/129
+https://wonhwa.tistory.com/49
 
 # soynlp
 https://github.com/lovit/soynlp
+
+conda install dash
+
+conda install -c conda-forge dash_cytoscape
+
+conda install numpy
+
+conda install pandas
+
+pip install eunjeon
+
+pip install konlpy
+
+pip install networkx

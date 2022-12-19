@@ -8,6 +8,8 @@ import graph
 import networkx as nx
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+# Load extra layouts
+cyto.load_extra_layouts()
 
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -31,8 +33,8 @@ def get_node_and_edges(title, num_node, scale, e_option, w_option, c_option, r):
     ]
 
     edges = [
-        {'data': {'source': source, 'target': target}}
-        for (source, target) in KG.cut_G.edges
+        {'data': {'source': source, 'target': target, 'weight': w['weight']}}
+        for (source, target, w) in KG.cut_G.edges(data=True)
     ]
     
     return nodes, edges
@@ -54,7 +56,13 @@ default_stylesheet = [
             'background-color': '#BFD7B5',
             'label': 'data(label)'
         }
-    }
+    },
+    {
+        'selector': 'edge',
+        'style': {
+            'label': 'data(weight)'
+        }
+    },
 ]
 
 app.layout = html.Div([
@@ -105,15 +113,31 @@ app.layout = html.Div([
     ], style={'width': '15%', 'float': 'left', 'margin': '10px'}),
 
     html.Span([
-        "num node  ",
+        html.Div([
+            "num node  ",
+        ]),
         dcc.Input(id='num-node', type='number', value=14)   
     ], style={'width': '15%', 'float': 'left', 'margin': '10px'}),
     
     html.Span([
+        html.Div([
         "scale( > 1 )  ",
+        ]),
         dcc.Input(id='scale', type='number', value=7),
     ], style={'width': '15%', 'float': 'left', 'margin': '10px'}),
         
+    html.Span([
+        "Layout option",
+        dcc.Dropdown(
+            id='dropdown-update-layout',
+            value='cola',
+            clearable=False,
+            options=[
+                {'label': name.capitalize(), 'value': name}
+                for name in ['cola', 'grid', 'circle', 'cose', 'euler', 'dagre']
+            ]
+        ),
+    ], style={'width': '15%', 'float': 'left', 'margin': '10px'}),
     html.Div([
         html.Button(id='submit-button-state', n_clicks=0, children='Update'),
     ], style={'width': '20%', 'float': 'left', 'display': 'block', 'margin': '10px'}),
@@ -136,6 +160,16 @@ def update_graph(n_clicks, num_node, scale, r, edge_option, word_option, cut_opt
     nodes, edges = get_node_and_edges(title, num_node, scale, edge_option, word_option, cut_option, r)
     return edges+nodes
 
+@app.callback(
+    Output('cytoscape-event-callbacks-1', 'layout'),
+    Input('submit-button-state', 'n_clicks'),
+    State('dropdown-update-layout', 'value'),
+)
+def layout_change(n_clicks, layout):
+    return {
+        'name': layout,
+        'animate': True
+    }
 
 
 if __name__ == '__main__':
