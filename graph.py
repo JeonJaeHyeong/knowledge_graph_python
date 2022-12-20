@@ -22,6 +22,7 @@ class KnowledgeGraph:
         self.edges = self.get_adj()
         self.G = self.make_graph(self.nodes, self.edges)
         self.cut_G = self.cutting_edge(self.G, self.edges, r, cut_option)
+        self.r = util.correlation(self.edges)
             
     def get_nodes(self):
         if self.w_option == "Term-Frequency":
@@ -67,6 +68,7 @@ class KnowledgeGraph:
         # dic_Stcs : [{'녹차': 1, '속': 1, '폴리페놀': 1}, {'거리': 1, '커피': 1, '전문점': 2, '녹차': 1},
         # dict_paras : [{'녹차': 1, '속': 1, '폴리페놀': 1}, {'거리': 1, '커피': 1, '전문점': 2, '녹차': 5, '곳': 1, ... ], ... ]        
         
+        # upper triangle shape
         for i in range(N):
             for j in range(i+1, N):
                 left, right = self.nodes[i][0], self.nodes[j][0]
@@ -143,7 +145,8 @@ class KnowledgeGraph:
             for p in range(len(parent)):
                 fromN, toN = id2name[p], id2name[parent[p]]
                 if fromN != toN:
-                    newG.add_edge(fromN, toN, weight=adj[p][parent[p]])
+                    w = adj[p][parent[p]] if adj[p][parent[p]] > 0 else adj[parent[p]][p]
+                    newG.add_edge(fromN, toN, weight=w)
                     
         elif option == "PFNET":
             if r == float("inf"):
