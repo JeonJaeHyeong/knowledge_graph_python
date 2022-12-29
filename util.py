@@ -10,6 +10,7 @@ def rescale(num, scale):
 
 def correlation(adj):
 
+    return 0
     sym_adj = adj + adj.T - np.diag(np.diag(adj))
 
     n, _ = adj.shape
@@ -21,6 +22,7 @@ def correlation(adj):
         for j in range(i+1, n):
             a, b = sym_adj[i, :], sym_adj[j, :]
             ar, br = np.delete(a, [i, j]), np.delete(b, [i, j])
+            ar, br = list(map(int, ar)), list(map(int, br))
             indirect[i, j] = pearsonr(ar, br)[0]
 
     size = np.count_nonzero(adj)

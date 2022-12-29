@@ -27,7 +27,7 @@ class KnowledgeGraph:
     def get_nodes(self):
         if self.w_option == "Term-Frequency":
             tokens_comb = pre.preprocess_node(self.paras)
-            dic_comb = pre.make_dic_count(tokens_comb)
+            dic_comb = pre.make_dic_tfidf(tokens_comb)
             return util.get_top_N(dic_comb, self.n_node) 
         elif self.w_option =="TextRank":
             keyword_extractor = KeywordSummarizer(
@@ -36,17 +36,16 @@ class KnowledgeGraph:
                 verbose = False
             )
             dic_comb = []
-            sents = " ".join(self.paras).split(". ")
+            sents = ". ".join(self.paras).split(". ")  
             keywords = keyword_extractor.summarize(sents, topk=self.n_node)
             for word, rank in keywords:
                 dic_comb.append((word, round(rank, 2)))
             return dic_comb
                 
     def get_adj(self):
-        
         tokens_paras, tokens_stcs = pre.preprocess_edge(self.paras) 
         dic_paras = list(map(pre.make_dic_count, tokens_paras))
-        dic_stcs = list(map(pre.get_stcs_dic, tokens_stcs))
+        dic_stcs = list(map(pre.stcs_dic_count, tokens_stcs))
         
         tokens_stcs = sum(tokens_stcs, [])
         dic_stcs = sum(dic_stcs, [])

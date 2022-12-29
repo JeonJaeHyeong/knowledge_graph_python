@@ -20,7 +20,7 @@ styles = {
     }
 }
 
-title = "txt/report_통계학연구원"
+title = "KT/report_통계학연구원"
 num_node = 14
 scale = 7
 edge_option = "scs"
