@@ -80,7 +80,6 @@ def lst2str(lst):
 
 def preprocess_node(paragraphs):  # paragraphs : ["문서1", "문서2", ...]
     
-    print("preprocess node")
     tokens_of_paras = list(map(preprocessing, paragraphs))
     return tokens_of_paras  # [ [문서1의 단어들], [문서2의 단어들], ... ]
 

@@ -1,6 +1,6 @@
 import numpy as np
 import operator
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, linregress
 
 def cos_similarity(lst1, lst2):
     return np.dot(lst1, lst2)/(np.linalg.norm(lst1)*np.linalg.norm(lst2))
@@ -10,7 +10,6 @@ def rescale(num, scale):
 
 def correlation(adj):
 
-    return 0
     sym_adj = adj + adj.T - np.diag(np.diag(adj))
 
     n, _ = adj.shape
@@ -22,8 +21,7 @@ def correlation(adj):
         for j in range(i+1, n):
             a, b = sym_adj[i, :], sym_adj[j, :]
             ar, br = np.delete(a, [i, j]), np.delete(b, [i, j])
-            ar, br = list(map(int, ar)), list(map(int, br))
-            indirect[i, j] = pearsonr(ar, br)[0]
+            indirect[i, j] = linregress(ar, br).rvalue
 
     size = np.count_nonzero(adj)
     x_xp = adj - np.sum(adj) / size
@@ -38,5 +36,24 @@ def correlation(adj):
     return r
 
 def get_top_N(dict, n_node):
+    dict = user_define_dict(dict)
     sorted_dict = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:n_node]
+
     return sorted_dict
+
+def user_define_dict(dict):
+    temp_dict = {}
+    temp_dict['통계학연구원'] = dict['통계학연구원']
+    temp_dict['수학과'] = dict['수학과']
+    temp_dict['통계학과'] = dict['통계학과']
+    #temp_dict['수학'] = dict['국어']
+    #temp_dict['과학'] = dict['과학']
+    #temp_dict['물리학'] = dict['물리학']
+    #temp_dict['생명'] = dict['생명']
+    #temp_dict['화학'] = dict['화학']
+    #temp_dict['영어'] = dict['영어']
+    #temp_dict['국어'] = dict['국어']
+    #temp_dict['미적분'] = dict['미적분']
+    #temp_dict['확률'] = dict['확률']
+    #temp_dict['통계'] = dict['통계']
+    return temp_dict

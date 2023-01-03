@@ -24,7 +24,7 @@ title = "KT/report_통계학연구원"
 num_node = 14
 scale = 7
 edge_option = "scs"
-word_option = "Term-Frequency"
+word_option = "TF-IDF"
 cut_option = "PFNET"
 r = float("inf")
 KG = graph.KnowledgeGraph(title, num_node, scale, edge_option, word_option, cut_option, r)
@@ -94,8 +94,8 @@ app.layout = html.Div([
         html.Span([
             "Select word rank option",
             dcc.Dropdown(
-                ['Term-Frequency', 'TextRank'],
-                value='Term-Frequency',
+                ['TF-IDF', 'TextRank'],
+                value='TF-IDF',
                 id='word-option'
             )
         ], style={'width': '30%', 'float': 'left', 'margin': '10px'}),

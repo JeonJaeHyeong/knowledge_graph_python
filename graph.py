@@ -25,7 +25,7 @@ class KnowledgeGraph:
         self.r = util.correlation(self.edges)
             
     def get_nodes(self):
-        if self.w_option == "Term-Frequency":
+        if self.w_option == "TF-IDF":
             tokens_comb = pre.preprocess_node(self.paras)
             dic_comb = pre.make_dic_tfidf(tokens_comb)
             return util.get_top_N(dic_comb, self.n_node) 
@@ -37,9 +37,15 @@ class KnowledgeGraph:
             )
             dic_comb = []
             sents = ". ".join(self.paras).split(". ")  
-            keywords = keyword_extractor.summarize(sents, topk=self.n_node)
+            keywords = keyword_extractor.summarize(sents, topk=self.n_node+len(pre.stopwords))
+
+            count_node = 0
             for word, rank in keywords:
-                dic_comb.append((word, round(rank, 2)))
+                if count_node == self.n_node:
+                    break
+                if word not in pre.stopwords:
+                    dic_comb.append((word, round(rank, 2)))
+                count_node += 1
             return dic_comb
                 
     def get_adj(self):
