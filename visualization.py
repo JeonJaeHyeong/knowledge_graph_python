@@ -20,18 +20,18 @@ styles = {
     }
 }
 
-title = "KT/report_통계학연구원"
+title = "KT/수학과 교육과정"
 num_node = 14
 scale = 7
-edge_option = "scs"
+edge_option = "ss"
 word_option = "TF-IDF"
 cut_option = "PFNET"
 r = float("inf")
 KG = graph.KnowledgeGraph(title, num_node, scale, edge_option, word_option, cut_option, r)
 
 def get_node_and_edges():
+    global KG
     pos = nx.spring_layout(KG.cut_G)
-
     nodes = [
         {
             'data': {'id': elem, 'label': elem},

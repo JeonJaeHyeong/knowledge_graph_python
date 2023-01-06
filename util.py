@@ -9,7 +9,6 @@ def rescale(num, scale):
     return scale - (scale-1)*num
 
 def correlation(adj):
-
     sym_adj = adj + adj.T - np.diag(np.diag(adj))
 
     n, _ = adj.shape
@@ -36,16 +35,15 @@ def correlation(adj):
     return r
 
 def get_top_N(dict, n_node):
-    dict = user_define_dict(dict)
+    #dict = user_define_dict(dict)
     sorted_dict = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)[:n_node]
-
     return sorted_dict
 
 def user_define_dict(dict):
     temp_dict = {}
-    temp_dict['통계학연구원'] = dict['통계학연구원']
-    temp_dict['수학과'] = dict['수학과']
-    temp_dict['통계학과'] = dict['통계학과']
+#    temp_dict['통계학연구원'] = dict['통계학연구원']
+#    temp_dict['수학과'] = dict['수학과']
+#    temp_dict['통계학과'] = dict['통계학과']
     #temp_dict['수학'] = dict['국어']
     #temp_dict['과학'] = dict['과학']
     #temp_dict['물리학'] = dict['물리학']
@@ -56,4 +54,16 @@ def user_define_dict(dict):
     #temp_dict['미적분'] = dict['미적분']
     #temp_dict['확률'] = dict['확률']
     #temp_dict['통계'] = dict['통계']
+
+    temp_dict['공통수학1'] = dict['공통수학1']
+    temp_dict['공통수학2'] = dict['공통수학2']
+    temp_dict['기본수학1'] = dict['기본수학1']
+    temp_dict['기본수학2'] = dict['기본수학2']
+    temp_dict['대수'] = dict['대수']
+#    temp_dict['미적분Ⅰ'] = dict['미적분Ⅰ']
+    temp_dict['확률과 통계'] = dict['확률과 통계']
+    temp_dict['기하'] = dict['기하']
+    temp_dict['경제 수학'] = dict['경제 수학']
+    temp_dict['인공지능 수학'] = dict['인공지능 수학']
+    temp_dict['직무 수학'] = dict['직무 수학']
     return temp_dict

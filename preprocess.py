@@ -25,31 +25,6 @@ def clean_text(str):
     txt = only_text(txt)
     return txt
 
-def make_dic_tfidf(list_of_wordlist):
-    total_word_counts = dict()
-    word_frequency = dict()
-    for word_list in list_of_wordlist:
-        word_counts = dict()
-        for word in word_list:
-            if word_counts.get(word, 0) == 0:
-                word_frequency[word] = word_frequency.get(word, 0) + 1
-            word_counts[word] = word_counts.get(word, 0) + 1    # 단어의 카운트 증가
-        
-        for item in word_counts.items():
-            total_word_counts[item[0]] = total_word_counts.get(item[0], 0) + item[1]
-
-    for item in word_frequency.items():
-        total_word_counts[item[0]] = round(total_word_counts[item[0]] / item[1], 2)
-
-    return total_word_counts
-
-def make_dic_count(paragraphs):
-    word_counts = dict()
-    for word in paragraphs:
-        word_counts[word] = word_counts.get(word, 0) + 1    # 단어의 카운트 증가
-
-    return word_counts
-
 def clean_stopword(tokens):
     clean_tokens = []
     for token in tokens:
@@ -64,10 +39,8 @@ def preprocessing(paragraph): # paragraph는 문서 하나
     clean_tokens = clean_stopword(clean_tokens)
 
     return clean_tokens # [토큰1, 토큰2, 토큰3, ...]
-
-def stcs_dic_count(ListOfSentence):
-    return list(map(make_dic_count, ListOfSentence))
     
+
 def stc_preprocessing(listOfstcs):
     return list(map(preprocessing, listOfstcs))
 
@@ -85,9 +58,46 @@ def preprocess_node(paragraphs):  # paragraphs : ["문서1", "문서2", ...]
 
 def preprocess_edge(paragraphs):  # paragraphs : ["문서1", "문서2", ...]
     
-    clean_tokens = list(map(preprocessing, paragraphs))    
     listOfsentences = list(map(para2stcs, paragraphs))      # [ [문서1의 문장1, 문서1의 문장2, ...], [문서2의 문장1, ...] , ...]
     clean_stc_tokens = list(map(stc_preprocessing, listOfsentences))
 
-    return clean_tokens, clean_stc_tokens
+    return clean_stc_tokens
+
+
+def make_dic_tfidf(list_of_wordlist):
+    total_word_counts = dict()
+    word_frequency = dict()
+    for word_list in list_of_wordlist:
+        word_counts = dict()
+        for word in word_list:
+            if word_counts.get(word, 0) == 0:
+                word_frequency[word] = word_frequency.get(word, 0) + 1
+            word_counts[word] = word_counts.get(word, 0) + 1    # 단어의 카운트 증가
+        
+        for item in word_counts.items():
+            total_word_counts[item[0]] = total_word_counts.get(item[0], 0) + item[1]
+
+    tfidfs = []
+    for item in word_frequency.items():
+        idf = np.log(len(list_of_wordlist) / (1 + item[1]))
+        tf = total_word_counts[item[0]]
+        tfidfs.append(tf * idf)
+
+    tfidfs = np.array(tfidfs) 
+    tfidfs = tfidfs / np.linalg.norm(tfidfs)
+    for idx, item in enumerate(word_frequency.items()):
+        total_word_counts[item[0]] = round(tfidfs[idx], 2)
+
+    return total_word_counts
+
+def make_dic_count(paragraphs):
+    word_counts = dict()
+    for word in paragraphs:
+        word_counts[word] = word_counts.get(word, 0) + 1    # 단어의 카운트 증가
+
+    return word_counts
+
+
+def stcs_dic_count(ListOfSentence):
+    return list(map(make_dic_count, ListOfSentence))
     

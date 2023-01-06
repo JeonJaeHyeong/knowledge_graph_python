@@ -26,9 +26,9 @@ class KnowledgeGraph:
             
     def get_nodes(self):
         if self.w_option == "TF-IDF":
-            tokens_comb = pre.preprocess_node(self.paras)
-            dic_comb = pre.make_dic_tfidf(tokens_comb)
-            return util.get_top_N(dic_comb, self.n_node) 
+            tokens_paras = pre.preprocess_node(self.paras)
+            tokens_tfidf = pre.make_dic_tfidf(tokens_paras)
+            return util.get_top_N(tokens_tfidf, self.n_node) 
         elif self.w_option =="TextRank":
             keyword_extractor = KeywordSummarizer(
                 tokenize = pre.mecab_tokenize,
@@ -37,10 +37,14 @@ class KnowledgeGraph:
             )
             dic_comb = []
             sents = ". ".join(self.paras).split(". ")  
-            keywords = keyword_extractor.summarize(sents, topk=self.n_node+len(pre.stopwords))
+            # stopword가 포함되어 있을 수 있으므로 n_node의 2배만큼 넉넉히 받음
+            keywords = keyword_extractor.summarize(sents, topk=2 * self.n_node) 
 
+
+            # stopword 제거하는 과정
             count_node = 0
             for word, rank in keywords:
+                # n_node만큼 구하면 멈추고 return
                 if count_node == self.n_node:
                     break
                 if word not in pre.stopwords:
@@ -49,7 +53,7 @@ class KnowledgeGraph:
             return dic_comb
                 
     def get_adj(self):
-        tokens_paras, tokens_stcs = pre.preprocess_edge(self.paras) 
+        tokens_paras, tokens_stcs = pre.preprocess_node(self.paras), pre.preprocess_edge(self.paras) 
         dic_paras = list(map(pre.make_dic_count, tokens_paras))
         dic_stcs = list(map(pre.stcs_dic_count, tokens_stcs))
         
@@ -99,7 +103,6 @@ class KnowledgeGraph:
                         cotable[i][j] = util.rescale(sim, self.scale)
                 else:
                     print("error : choose option among ('ss', 'ps', 'scs', 'pcs')")
-        #print("before cotable : ", cotable)
                     
         no_edge_idx = np.where(cotable == 0)
         
@@ -118,6 +121,10 @@ class KnowledgeGraph:
 
     def make_graph(self, nodes, adj):
         G = nx.Graph()
+
+        for i in range(len(nodes)):
+            G.add_node(str(nodes[i][0])+" "+str(nodes[i][1]))
+
         for i in range(len(nodes)):
             for j in range(i+1, len(nodes)):
                 if adj[i][j] != -1:
