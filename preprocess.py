@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 #from sklearn.feature_extraction.text import CountVectorizer
 import re   
 
-stopwords = ['관련', '때']
+stopwords = ['관련', '때', '다음']
 
 def mecab_tokenize(sent):
     mecab = Mecab("C:\mecab\mecab-ko-dic") 
@@ -23,6 +23,7 @@ def mecab_tokenize(sent):
 def clean_text(str):
     txt = re.sub('[-=+,#/\?:^@*\"※~ㆍ!』‘|\(\)\[\]`\'…》\”\“\’·]', ' ', str)
     txt = only_text(txt)
+    txt = repeat_normalize(txt, num_repeats=1)
     return txt
 
 def clean_stopword(tokens):
@@ -70,18 +71,19 @@ def make_dic_tfidf(list_of_wordlist):
     for word_list in list_of_wordlist:
         word_counts = dict()
         for word in word_list:
-            if word_counts.get(word, 0) == 0:
-                word_frequency[word] = word_frequency.get(word, 0) + 1
+            #if word_counts.get(word, 0) == 0:
+            #    word_frequency[word] = word_frequency.get(word, 0) + 1
             word_counts[word] = word_counts.get(word, 0) + 1    # 단어의 카운트 증가
         
         for item in word_counts.items():
             total_word_counts[item[0]] = total_word_counts.get(item[0], 0) + item[1]
 
+    # tfidf 계산 안하고 tf만 계산함. tfidf는 주석처리됨
     tfidfs = []
     for item in word_frequency.items():
-        idf = np.log(len(list_of_wordlist) / (1 + item[1]))
+        #idf = np.log(len(list_of_wordlist) / (1 + item[1]))
         tf = total_word_counts[item[0]]
-        tfidfs.append(tf * idf)
+        tfidfs.append(tf) #* idf)
 
     tfidfs = np.array(tfidfs) 
     tfidfs = tfidfs / np.linalg.norm(tfidfs)

@@ -2,6 +2,10 @@ import numpy as np
 import operator
 from scipy.stats import pearsonr, linregress
 
+graph_sim = 0
+common_nodes = []
+common_edges = []
+
 def cos_similarity(lst1, lst2):
     return np.dot(lst1, lst2)/(np.linalg.norm(lst1)*np.linalg.norm(lst2))
 
@@ -33,6 +37,27 @@ def correlation(adj):
     r = np.sum(x_xp * y_yp) / (x2 * y2)
 
     return r
+
+def graph_similarity(g1, g2):
+    
+    global graph_sim, common_edges, common_nodes
+
+    node1 = [ name for (name, weight) in g1.nodes]
+    node2 = [ name for (name, weight) in g2.nodes]
+    common_nodes = list(set(node1) & set(node2))
+
+    idx1, idx2 = [], []
+    for c_node in common_nodes:
+        idx1.append(node1.index(c_node))
+        idx2.append(node2.index(c_node))
+
+    edge1, edge2 = g1.cut_G.edges, g2.cut_G.edges
+    edge1 = [ (n1.split()[0], n2.split()[0]) for (n1, n2) in edge1 ]
+    edge2 = [ (n1.split()[0], n2.split()[0]) for (n1, n2) in edge2 ]
+
+    common_edges = list(set(edge1) & set(edge2))
+    graph_sim = len(common_edges) / max(len(edge1), len(edge2))
+
 
 def get_top_N(dict, n_node):
     #dict = user_define_dict(dict)

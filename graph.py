@@ -25,7 +25,7 @@ class KnowledgeGraph:
         self.r = util.correlation(self.edges)
             
     def get_nodes(self):
-        if self.w_option == "TF-IDF":
+        if self.w_option == "TF":
             tokens_paras = pre.preprocess_node(self.paras)
             tokens_tfidf = pre.make_dic_tfidf(tokens_paras)
             return util.get_top_N(tokens_tfidf, self.n_node) 
@@ -49,7 +49,7 @@ class KnowledgeGraph:
                     break
                 if word not in pre.stopwords:
                     dic_comb.append((word, round(rank, 2)))
-                count_node += 1
+                    count_node += 1
             return dic_comb
                 
     def get_adj(self):
